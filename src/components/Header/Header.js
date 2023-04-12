@@ -6,12 +6,12 @@ function Header() {
     <nav>
       <ul>
         <li>
-          <NavLink to="/" exact activeClassName="active">
+          <NavLink exact="true" to="/" activeclassname="active">
             Home
           </NavLink>
         </li>
         <li>
-          <NavLink to="/movies" activeClassName="active">
+          <NavLink exact="true" to="/movies" activeclassname="active">
             Movies
           </NavLink>
         </li>
