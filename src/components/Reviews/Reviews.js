@@ -1,39 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getMovieReviews } from '../../api/themoviedb';
+import { fetchMovieReviews } from '../../api';
 
 const Reviews = () => {
-  const [reviews, setReviews] = useState([]);
   const { movieId } = useParams();
+  const [reviews, setReviews] = useState(null);
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await getMovieReviews(movieId);
-        setReviews(response.data.results);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchReviews();
+    fetchMovieReviews(movieId).then(data => {
+      setReviews(data.results);
+    });
   }, [movieId]);
 
+  if (!reviews) {
+    return <div>Loading...</div>;
+  } else if (reviews.length === 0) {
+    return <div>We don't have any reviews for this movie</div>;
+  }
+
   return (
-    <div>
-      {reviews.length > 0 ? (
-        <ul>
-          {reviews.map(review => (
-            <li key={review.id}>
-              <p>{review.author}</p>
-              <p>{review.content}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>We don't have any reviews for this movie</p>
-      )}
-    </div>
+    <section>
+      <ul>
+        {reviews.map(review => (
+          <li key={review.id}>
+            <h2>{review.author}</h2>
+            <p>{review.content}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 };
 

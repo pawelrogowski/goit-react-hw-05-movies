@@ -1,34 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getMovieCredits } from '../../api/themoviedb';
+import { fetchMovieCredits } from '../../api';
+import NotFoundImage from '../../images/portrait-not-found.png';
 
 const Cast = () => {
-  const [cast, setCast] = useState([]);
   const { movieId } = useParams();
+  const [credits, setCredits] = useState(null);
 
   useEffect(() => {
-    const fetchCredits = async () => {
-      const response = await getMovieCredits(movieId);
-      setCast(response.data.cast);
-    };
-    fetchCredits();
+    fetchMovieCredits(movieId).then(data => {
+      setCredits(data.cast);
+    });
   }, [movieId]);
 
+  if (!credits) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div>
-      <h2>Cast</h2>
+    <section>
       <ul>
-        {cast.map(actor => (
-          <li key={actor.id}>
-            <img src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`} alt={actor.name} />
-            <div>
-              <h3>{actor.name}</h3>
-              <p>as {actor.character}</p>
-            </div>
+        {credits.map(credit => (
+          <li key={credit.id}>
+            <img
+              src={
+                credit.profile_path
+                  ? `https://image.tmdb.org/t/p/w185${credit.profile_path}`
+                  : NotFoundImage
+              }
+              width="185"
+              height="278"
+              alt={credit.name}
+            />
+            <p>{credit.name}</p>
+            <p>Character: {credit.character}</p>
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 };
 
